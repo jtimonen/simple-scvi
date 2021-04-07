@@ -1,4 +1,4 @@
-# scvi-tools-skeleton
+# simple-scvi
 
-Skeleton repository for creating novel models with
+Simple scVI version created using
 [scvi-tools](https://www.scvi-tools.org/en/stable/). 
