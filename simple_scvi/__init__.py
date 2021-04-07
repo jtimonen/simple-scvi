@@ -1,4 +1,3 @@
-"""scvi-tools-skeleton."""
 
 import logging
 
@@ -16,7 +15,7 @@ try:
 except ModuleNotFoundError:
     import importlib_metadata
 
-package_name = "scvi-tools-skeleton"
+package_name = "simple-scvi"
 __version__ = importlib_metadata.version(package_name)
 
 logger = logging.getLogger(__name__)
