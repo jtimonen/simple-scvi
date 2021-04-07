@@ -1,5 +1,4 @@
 rm -rf build/
 rm -rf dist/
-poetry build
-poetry install
-
+python setup.py build
+python setup.py install

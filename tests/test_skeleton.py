@@ -1,5 +1,6 @@
+import scvi
 from scvi.data import synthetic_iid
-from mypackage import MyModel, MyPyroModel
+from simple_scvi import MyModel, MyPyroModel
 import pyro
 
 
