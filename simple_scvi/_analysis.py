@@ -22,7 +22,7 @@ def save_results_txt(
 
 
 def init_model_name(idx, m_type, n_latent, n_hidden, min_counts, n_top_genes):
-    model_dir = "simple_scvi_models"  # hardcoded
+    model_dir = "models"  # hardcoded
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
     model_name = (
@@ -113,15 +113,14 @@ def analysis(
     print(adata)
     if not pretrained:
         # Create and train model
-        if not linear:
-            model = MyModel(adata, n_latent=n_latent, n_hidden=n_hidden)
-        else:
-            raise RuntimeError("Linear not implemented!")
+        model = MyModel(adata, n_latent=n_latent, n_hidden=n_hidden)
         model.train()
         model.save(model_path)
     else:
         # Load pretrained model
-        raise RuntimeError("Loading pretraining not implemented!")
+        model = MyModel(adata, n_latent=n_latent, n_hidden=n_hidden)
+        model.load(model_path, adata, use_gpu=False)
+        print("Loaded model from:", model_path)
 
     # Get latent and plot
     latent = model.get_latent_representation()
