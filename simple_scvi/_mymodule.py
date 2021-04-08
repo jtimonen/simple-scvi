@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 from scvi import _CONSTANTS
-from scvi.distributions import ZeroInflatedNegativeBinomial
+from scvi.distributions import NegativeBinomial
 from scvi.module.base import BaseModuleClass, LossRecorder, auto_move_data
-from scvi.nn import DecoderSCVI, Encoder
+from scvi.nn import LinearDecoderSCVI, Encoder
 from torch.distributions import Normal
 from torch.distributions import kl_divergence as kl
 
@@ -45,6 +45,7 @@ class MyModule(BaseModuleClass):
         super().__init__()
         self.n_latent = n_latent
         self.n_batch = n_batch
+        self.kl_factor = 0.001
         # this is needed to comply with some requirement of the VAEMixin class
         self.latent_distribution = "normal"
 
@@ -68,12 +69,7 @@ class MyModule(BaseModuleClass):
             dropout_rate=dropout_rate,
         )
         # decoder goes from n_latent-dimensional space to n_input-d data
-        self.decoder = DecoderSCVI(
-            n_latent,
-            n_input,
-            n_layers=n_layers,
-            n_hidden=n_hidden,
-        )
+        self.decoder = LineraDecoderSCVI(n_input=n_latent, n_ouput=n_input)
 
     def _get_inference_input(self, tensors):
         """Parse the dictionary to get appropriate args"""
@@ -127,6 +123,7 @@ class MyModule(BaseModuleClass):
         generative_outputs,
         kl_weight: float = 1.0,
     ):
+        kl_weight = self.kl_factor * kl_weight
         x = tensors[_CONSTANTS.X_KEY]
         local_l_mean = tensors[_CONSTANTS.LOCAL_L_MEAN_KEY]
         local_l_var = tensors[_CONSTANTS.LOCAL_L_VAR_KEY]
