@@ -4,6 +4,7 @@ from ._plotting import pair_plot, plot_z_3d, keys_to_colors
 import numpy as np
 from ._mymodel import MyModel
 from . import setup_anndata
+import scvi
 
 
 def save_results_txt(
@@ -113,12 +114,12 @@ def analysis(
     print(adata)
     if not pretrained:
         # Create and train model
-        model = MyModel(adata, n_latent=n_latent, n_hidden=n_hidden)
+        model = scvi.model.LinearSCVI(adata, n_latent=n_latent, n_hidden=n_hidden)
         model.train()
         model.save(model_path)
     else:
         # Load pretrained model
-        model = MyModel(adata, n_latent=n_latent, n_hidden=n_hidden)
+        model = scvi.model.LinearSCVI(adata, n_latent=n_latent, n_hidden=n_hidden)
         model.load(model_path, adata, use_gpu=False)
         print("Loaded model from:", model_path)
 
