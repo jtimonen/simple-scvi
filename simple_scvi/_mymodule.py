@@ -46,6 +46,7 @@ class MyModule(BaseModuleClass):
         self.n_latent = n_latent
         self.n_batch = n_batch
         self.kl_factor = 0.001
+        print("USING KL FACTOR:", self.kl_factor)
         # this is needed to comply with some requirement of the VAEMixin class
         self.latent_distribution = "normal"
 
@@ -69,7 +70,7 @@ class MyModule(BaseModuleClass):
             dropout_rate=dropout_rate,
         )
         # decoder goes from n_latent-dimensional space to n_input-d data
-        self.decoder = LineraDecoderSCVI(n_input=n_latent, n_ouput=n_input)
+        self.decoder = LinearDecoderSCVI(n_input=n_latent, n_output=n_input)
 
     def _get_inference_input(self, tensors):
         """Parse the dictionary to get appropriate args"""
@@ -149,7 +150,7 @@ class MyModule(BaseModuleClass):
         ).sum(dim=1)
 
         reconst_loss = (
-            -ZeroInflatedNegativeBinomial(mu=px_rate, theta=px_r, zi_logits=px_dropout)
+            -NegativeBinomial(mu=px_rate, theta=px_r)
             .log_prob(x)
             .sum(dim=-1)
         )
