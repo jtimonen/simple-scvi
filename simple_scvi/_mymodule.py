@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from scvi import _CONSTANTS
-from scvi.distributions import NegativeBinomial
+from scvi.distributions import NegativeBinomial, ZeroInflatedNegativeBinomial
 from scvi.module.base import BaseModuleClass, LossRecorder, auto_move_data
 from scvi.nn import LinearDecoderSCVI, Encoder
 from torch.distributions import Normal
@@ -150,7 +150,7 @@ class MyModule(BaseModuleClass):
         ).sum(dim=1)
 
         reconst_loss = (
-            -NegativeBinomial(mu=px_rate, theta=px_r)
+            -ZeroInflatedNegativeBinomial(mu=px_rate, theta=px_r, zi_logits=px_dropout)
             .log_prob(x)
             .sum(dim=-1)
         )
