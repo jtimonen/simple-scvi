@@ -45,7 +45,7 @@ class MyModule(BaseModuleClass):
         super().__init__()
         self.n_latent = n_latent
         self.n_batch = n_batch
-        self.kl_factor = 0.001
+        self.kl_factor = 1.0
         print("USING KL FACTOR:", self.kl_factor)
         # this is needed to comply with some requirement of the VAEMixin class
         self.latent_distribution = "normal"
