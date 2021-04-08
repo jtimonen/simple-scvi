@@ -10,6 +10,7 @@ import scvi
 def save_results_txt(
     model_path, latent, cell_type, start_idx, end_idx, time_course, init_indices
 ):
+
     np.savetxt(os.path.join(model_path, "latent.txt"), latent)
     np.savetxt(os.path.join(model_path, "cell_type.txt"), cell_type, fmt="%s")
     np.savetxt(os.path.join(model_path, "start_idx.txt"), start_idx, fmt="%d")
@@ -18,7 +19,8 @@ def save_results_txt(
     np.savetxt(os.path.join(model_path, "init_indices.txt"), init_indices, fmt="%d")
 
     # print useful command
-    cmd = "cp -r " + model_path + " ../../diffeq_match/case_studies/"
+    out_path = "../../dem/case_studies/"
+    cmd = "cp -r " + model_path + " " + out_path
     print("useful command:\n", cmd)
 
 
