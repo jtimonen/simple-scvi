@@ -135,3 +135,22 @@ def plot_z_3d(z, colors, save_name=None, H: float = 2.5, alpha=0.8, **kwargs):
     ax1.set_zlim(-H, H)
 
     draw_plot(save_name, **kwargs)
+
+
+def plot_x_traj(X_traj, gene_inds):
+
+    L = X_traj.shape[1]
+    t = np.linspace(0, 1, L)
+    N_traj = X_traj.shape[0]
+    plt.figure(figsize=(10, 6))
+    j = 0
+    cols = sns.color_palette("tab10")[0:len(gene_inds)]
+    for gene_idx in gene_inds:
+        x = X_traj[:, :, gene_idx]
+        for idx in range(N_traj):
+            plt.plot(t, x[idx, :], alpha=0.05, color=cols[j])
+        j = j + 1
+
+    plt.ylabel("Reconstructed (normalized log) expression")
+    plt.xlabel("t")
+    plt.show()

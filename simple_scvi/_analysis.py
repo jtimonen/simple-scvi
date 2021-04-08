@@ -1,6 +1,6 @@
 import os
 import scanpy as sc
-from ._plotting import pair_plot, plot_z_3d, keys_to_colors
+from ._plotting import pair_plot, plot_z_3d, keys_to_colors, plot_x_traj
 import numpy as np
 from ._mymodel import MyModel
 from . import setup_anndata
@@ -66,8 +66,8 @@ def parse_args(data_dir, idx, model_name, pretrained):
 
 
 def analysis(
-    data_dir, idx, pretrained, linear, n_latent, n_hidden, min_counts, n_top_genes
-):
+    data_dir, idx, pretrained, linear, n_latent, n_hidden, min_counts, n_top_genes,
+decode_traj = False):
 
     # Setup
     m_type = "lin" if linear else "nl"
@@ -121,9 +121,12 @@ def analysis(
         model.save(model_path)
     else:
         # Load pretrained model
-        model = scvi.model.LinearSCVI(adata, n_latent=n_latent, n_hidden=n_hidden)
-        model.load(model_path, adata, use_gpu=False)
+        model = scvi.model.LinearSCVI.load(model_path, adata)
         print("Loaded model from:", model_path)
+        if decode_traj:
+            z_traj = np.load(os.path.join(model_path, "z_traj.npy"))
+            decode_trajectories(model, adata, z_traj)
+            return None
 
     # Get latent and plot
     latent = model.get_latent_representation()
@@ -154,3 +157,28 @@ def analysis(
     )
 
     return adata, model
+
+
+def decode_trajectories(model, adata, z_traj):
+    print("Using VAE decoder to decode trajectories!")
+    W = model.get_loadings().to_numpy().T
+    print("W:", W.shape)
+    print("z_traj:", z_traj.shape)
+    N_traj = z_traj.shape[1]
+    G = W.shape[1]
+    L = z_traj.shape[0]
+    X_traj = np.zeros((N_traj, L, G))
+    for idx in range(N_traj):
+        z_idx = z_traj[:, idx, :]
+        x_traj = np.matmul(z_idx, W)
+        X_traj[idx, :, :] = x_traj
+    print("X_traj:", X_traj.shape)
+    np.random.seed(123)
+    gene_inds = np.random.choice(G, size=5, replace=False)
+    print("gene_inds:", gene_inds)
+    plot_x_traj(X_traj, gene_inds)
+
+
+
+
+
